@@ -49,7 +49,7 @@ export class PuppeteerPdfGenerator implements IPdfGenerator {
                 sizeBytes: pdf.length
             });
 
-            return pdf;
+            return Buffer.from(pdf);
         } catch (error) {
             this.logger.error('Error generating PDF', { error });
             throw error;
