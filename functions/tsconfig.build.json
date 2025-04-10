@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "files": ["src/index.ts"]
+}

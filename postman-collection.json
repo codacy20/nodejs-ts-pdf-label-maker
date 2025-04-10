@@ -1,0 +1,98 @@
+{
+    "info": {
+      "_postman_id": "b5c9d5f3-6ff4-4a98-8a98-ff367c0e6e8d",
+      "name": "PDF Label Maker",
+      "description": "A collection for testing the PDF label generation endpoint",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Generate Shipping Label",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"return_address\": {\n        \"company\": \"CODE Internet Applications\",\n        \"address\": \"Frederik Matthesstraat 30\",\n        \"zip_code\": \"2613 ZZ\",\n        \"city\": \"Delft\",\n        \"country\": \"The Netherlands\"\n    },\n    \"order\": \"CODE-1339\",\n    \"name\": \"Test User\",\n    \"language\": \"en\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/get-label",
+            "protocol": "http",
+            "host": [
+              "localhost"
+            ],
+            "port": "3000",
+            "path": [
+              "get-label"
+            ]
+          },
+          "description": "Generate a PDF shipping label"
+        },
+        "response": []
+      },
+      {
+        "name": "Generate Shipping Label (Dutch)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"return_address\": {\n        \"company\": \"CODE Internet Applications\",\n        \"address\": \"Frederik Matthesstraat 30\",\n        \"zip_code\": \"2613 ZZ\",\n        \"city\": \"Delft\",\n        \"country\": \"The Netherlands\"\n    },\n    \"order\": \"CODE-1339\",\n    \"name\": \"Test User\",\n    \"language\": \"nl\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3000/get-label",
+            "protocol": "http",
+            "host": [
+              "localhost"
+            ],
+            "port": "3000",
+            "path": [
+              "get-label"
+            ]
+          },
+          "description": "Generate a PDF shipping label in Dutch"
+        },
+        "response": []
+      }
+    ],
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            ""
+          ]
+        }
+      },
+      {
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "// Test if the response is a PDF",
+            "if (pm.response.headers.get(\"Content-Type\") === \"application/pdf\") {",
+            "    pm.test(\"Received a PDF file\", function () {",
+            "        pm.response.to.be.ok;",
+            "        pm.expect(pm.response.size()).to.be.above(0);",
+            "    });",
+            "} else {",
+            "    pm.test(\"Response should be a PDF\", function () {",
+            "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.equal(\"application/pdf\");",
+            "    });",
+            "}"
+          ]
+        }
+      }
+    ]
+  }

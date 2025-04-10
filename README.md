@@ -1,57 +1,131 @@
-# CODE App Assessment
+# PDF Label Maker
 
-This assessment is designed to assess your skills. For this assessment you do not need to deploy anything. Everything can be developed and tested offline (only for NPM package you need a connection). You should also not need an actual connection with a Shopify store.
+A TypeScript-based Node.js application for generating shipping label PDFs using templates.
 
-## Create a shipping label for a return
+## Features
 
-In most cases we can provide shipping labels from existing carriers. But in some cases you want to create a shipping label which is a simple PDF file that is used as shipping label. The customer then pays for the shipment at the postal office.
+- RESTful API endpoint for label generation
+- Multi-language support (English and Dutch)
+- PDF generation using Puppeteer
+- Template-based HTML rendering 
+- Docker support for easy deployment
+- Comprehensive monitoring and health checks
+- Dependency injection using InversifyJS
+- TypeScript for type safety
 
-Your assignment is to create a PDF label based on a return address that is supplied as argument. In the `assets` folder there is an `sample-label.pdf` attached. The endresult should look like that PDF.
-Furthermore a `code-logo.png` is attached which can be used in your implementation.
+## Architecture
 
-We have setup a simple Express environment that you can use to build your implementation. It can be found in the `functions` folder. 
-Please implement your solution in the `src/shipping-label` folder so it will be accessible via the route `/get-label`.
+The application follows a clean architecture approach with:
 
-Your implementation should be testable via this route:
+- **Dependency Injection**: Using InversifyJS for loose coupling and better testability
+- **Service-oriented design**: Clear separation of concerns with dedicated services
+- **Controller-Service pattern**: Controllers handle HTTP requests, services contain business logic
+- **Repository pattern**: For data access abstraction (when applicable)
+- **Middleware approach**: For cross-cutting concerns like logging and error handling
 
-`POST https://localhost:3000/get-label`
+## Prerequisites
 
-Payload: 
-```json
-{
-    "return_address": {
-        "company": "CODE Internet Applications",
-        "address": "Frederik Matthesstraat 30",
-        "zip_code": "2613 ZZ",
-        "city": "Delft",
-        "country": "The Netherlands"
-    },
-    "order": "CODE-1339",
-    "name": "Test User",
-    "language": "en"
-}
+- Node.js 20 or higher
+- pnpm package manager
+
+## Installation
+
+1. Clone the repository
+2. Navigate to the project directory:
+   ```bash
+   cd nodejs-ts-pdf-label-maker/functions
+   ```
+3. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+## Development
+
+To start the development server:
+
+```bash
+pnpm run dev
 ```
 
+To build and start the application:
 
-### Requirements
+```bash
+pnpm run build
+pnpm start
+```
 
-Please do not spend more than 2 hours on this assessment (if it is not finished, please add comments to the code to explain what you would have done if you had more time).
+The server will start on port 3000 by default, or the port specified in the PORT environment variable.
 
-* Build the solution in Typescript
-* You may use AI to generate code, but you should understand the code you write
-    * Building it without AI has our preference as it better assesses your skills
-* Feel free to use any package you want to generate the PDF
-* Make an HTTPS endpoint in Express that provides the PDF as output
-* Please think about comments in your code (JSDoc)
-* Think about a logical way to structurize your code
-* Bonus points if you write additional tests for your implementation (please do not use AI to write the tests)
-* Bonus points if you make the label multilingual
+## API Endpoints
 
-Please download the `code-assessment.zip` file and work from there (please do not create a fork of this repository).
-You may setup a new repository if you want to (it also shows your commits).
+- **Generate Label**
+  - `POST /get-label` - Generate a shipping label PDF
+    ```json
+    {
+      "return_address": {
+        "company": "Example Company",
+        "address": "123 Example Street",
+        "zip_code": "12345",
+        "city": "Example City",
+        "country": "Example Country"
+      },
+      "order": "ORDER123",
+      "name": "John Doe",
+      "language": "en"
+    }
+    ```
 
-## Installation and development
+- **Health Checks**
+  - `GET /health` - Get application health status and metrics
+  - `GET /health/liveness` - Kubernetes liveness probe endpoint
+  - `GET /health/readiness` - Kubernetes readiness probe endpoint
 
-* Use `npm i` or equivalent to install all the package 
-* Run `npm run start` to start the server
-* You should see `Hello world!` when you open your browser with the URL `https://localhost:3000`
+## Postman Collection
+
+The project includes a Postman collection for easy API testing. You can find it at the root of the project:
+
+```
+postman-collection.json
+```
+
+Import this file into Postman to test all API endpoints with pre-configured requests.
+
+## Docker Support
+
+The project includes Docker and docker-compose support for containerization. 
+
+To build and run using docker-compose:
+
+```bash
+docker-compose up --build
+```
+
+Or to build and run manually:
+
+```bash
+docker build -t pdf-label-maker .
+docker run -p 3000:3000 -v $(pwd)/../assets:/app/assets pdf-label-maker
+```
+
+## Project Structure
+
+```
+src/
+├── config/             # Application configuration
+├── constants/          # Constants and symbols
+├── health/             # Health check endpoints
+├── pdf/                # PDF generation logic
+├── shipping-label/     # Label generation service and controller
+└── utils/              # Utility functions and services
+assets/                 # Templates and static assets
+```
+
+## Future Improvements
+
+- **Input/Output Validation**: Add schema validation using Zod to ensure data integrity
+- **Testing**: Implement comprehensive unit, integration, and e2e tests, leveraging dependency injection for easier mocking
+- **API Documentation**: Add Swagger/OpenAPI documentation
+- **Caching**: Implement caching mechanism for frequently used data
+- **Logging Enhancement**: Add structured logging with correlation IDs
+- **Internationalization**: Expand language support beyond English and Dutch
