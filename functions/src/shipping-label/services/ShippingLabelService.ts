@@ -3,9 +3,19 @@ import { IShippingLabelService } from './IShippingLabelService.js';
 import { IPdfGenerator } from '../../pdf/IPdfGenerator.js';
 import { IHtmlRenderer } from '../../utils/HtmlRenderer.js';
 import { ILogger } from '../../utils/Logger.js';
-import path from 'path';
-import fs from 'fs/promises';
+import pathModule from 'path';
+import fsModule from 'fs/promises';
 import { TYPES } from '../../constants/types.js';
+
+// Define interfaces for path and fs dependencies
+export interface IPathModule {
+    join(...paths: string[]): string;
+    resolve(...paths: string[]): string;
+}
+
+export interface IFileSystem {
+    readFile(path: string): Promise<Buffer>;
+}
 
 type SupportedLanguage = 'en' | 'nl';
 
@@ -34,11 +44,21 @@ export class ShippingLabelService implements IShippingLabelService {
         }
     };
 
+    // Use default implementations if not provided
+    private path: IPathModule;
+    private fs: IFileSystem;
+
     constructor(
         @inject(TYPES.PdfGenerator) private pdfGenerator: IPdfGenerator,
         @inject(TYPES.HtmlRenderer) private htmlRenderer: IHtmlRenderer,
-        @inject(TYPES.Logger) private logger: ILogger
-    ) { }
+        @inject(TYPES.Logger) private logger: ILogger,
+        path?: IPathModule,
+        fs?: IFileSystem
+    ) {
+        // Use injected dependencies or defaults
+        this.path = path || pathModule;
+        this.fs = fs || fsModule;
+    }
 
     /**
      * Generates a shipping label PDF
@@ -58,9 +78,9 @@ export class ShippingLabelService implements IShippingLabelService {
         language: string;
     }): Promise<Buffer> {
 
-        const rootDir = process.env.ASSETS_PATH || path.resolve(process.cwd(), '..', 'assets');
-        const templatePath = path.join(rootDir, 'labelTemplate.html');
-        const logoPath = path.join(rootDir, 'code-logo.png');
+        const rootDir = process.env.ASSETS_PATH || this.path.resolve(process.cwd(), '..', 'assets');
+        const templatePath = this.path.join(rootDir, 'labelTemplate.html');
+        const logoPath = this.path.join(rootDir, 'code-logo.png');
 
 
         this.logger.info('Generating shipping label', {
@@ -72,7 +92,7 @@ export class ShippingLabelService implements IShippingLabelService {
 
         let logoSrc = '';
         try {
-            const logoFile = await fs.readFile(logoPath);
+            const logoFile = await this.fs.readFile(logoPath);
             const logoBase64 = logoFile.toString('base64');
             logoSrc = `data:image/png;base64,${logoBase64}`;
         } catch (error) {
