@@ -23,15 +23,15 @@ export class HealthController {
                 loadAvg: os.loadavg()
             }
         };
-        
+
         res.json(healthData);
     }
-    
+
     @httpGet('/liveness')
     async getLiveness(_req: Request, res: Response): Promise<void> {
         res.json({ status: 'UP' });
     }
-    
+
     @httpGet('/readiness')
     async getReadiness(_req: Request, res: Response): Promise<void> {
         res.json({ status: 'READY' });

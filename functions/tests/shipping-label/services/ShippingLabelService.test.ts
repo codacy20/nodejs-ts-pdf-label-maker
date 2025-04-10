@@ -5,14 +5,13 @@ import { IHtmlRenderer } from '../../../src/utils/HtmlRenderer.js';
 import { ILogger } from '../../../src/utils/Logger.js';
 import { Buffer } from 'buffer';
 
-// Create mock implementations using the interfaces
 const mockPath: IPathModule = {
-  join: vi.fn((...args: string[]) => args.join('/')),
-  resolve: vi.fn((...args: string[]) => args.join('/'))
+    join: vi.fn((...args: string[]) => args.join('/')),
+    resolve: vi.fn((...args: string[]) => args.join('/'))
 };
 
 const mockFs: IFileSystem = {
-  readFile: vi.fn()
+    readFile: vi.fn()
 };
 
 describe('ShippingLabelService', () => {
@@ -22,13 +21,10 @@ describe('ShippingLabelService', () => {
     let mockLogger: ILogger;
 
     beforeEach(() => {
-        // Reset mocks
         vi.resetAllMocks();
 
-        // Mock environment variable
         vi.stubEnv('ASSETS_PATH', '/mock/assets/path');
 
-        // Setup mocks
         mockPdfGenerator = {
             generatePdf: vi.fn().mockResolvedValue(Buffer.from('mock-pdf-content'))
         };
@@ -44,10 +40,8 @@ describe('ShippingLabelService', () => {
             error: vi.fn()
         };
 
-        // Setup mock for readFile
         vi.mocked(mockFs.readFile).mockResolvedValue(Buffer.from('mock-logo-content'));
 
-        // Create service instance with injected mocks
         shippingLabelService = new ShippingLabelService(
             mockPdfGenerator,
             mockHtmlRenderer,
@@ -58,7 +52,6 @@ describe('ShippingLabelService', () => {
     });
 
     it('should generate a shipping label with English translations', async () => {
-        // Arrange
         const labelData = {
             return_address: {
                 company: 'Test Company',
@@ -72,15 +65,13 @@ describe('ShippingLabelService', () => {
             language: 'en'
         };
 
-        // Act
         const result = await shippingLabelService.generateLabel(labelData);
 
-        // Assert
         expect(mockLogger.info).toHaveBeenCalledWith('Generating shipping label', expect.any(Object));
         expect(mockHtmlRenderer.render).toHaveBeenCalledWith(
             expect.any(String),
             expect.objectContaining({
-                title: 'Return Label', // English translation
+                title: 'Return Label',
                 order: 'ORD123',
                 name: 'John Doe'
             })
@@ -90,7 +81,6 @@ describe('ShippingLabelService', () => {
     });
 
     it('should use Dutch translations when language is set to nl', async () => {
-        // Arrange
         const labelData = {
             return_address: {
                 company: 'Test Company',
@@ -104,21 +94,18 @@ describe('ShippingLabelService', () => {
             language: 'nl'
         };
 
-        // Act
         await shippingLabelService.generateLabel(labelData);
 
-        // Assert
         expect(mockHtmlRenderer.render).toHaveBeenCalledWith(
             expect.any(String),
             expect.objectContaining({
-                title: 'Retourlabel', // Dutch translation
+                title: 'Retourlabel',
                 recipient: 'Ontvanger'
             })
         );
     });
 
     it('should fall back to English for unsupported languages', async () => {
-        // Arrange
         const labelData = {
             return_address: {
                 company: 'Test Company',
@@ -129,23 +116,20 @@ describe('ShippingLabelService', () => {
             },
             order: 'ORD123',
             name: 'John Doe',
-            language: 'fr' // Unsupported language
+            language: 'fr'
         };
 
-        // Act
         await shippingLabelService.generateLabel(labelData);
 
-        // Assert
         expect(mockHtmlRenderer.render).toHaveBeenCalledWith(
             expect.any(String),
             expect.objectContaining({
-                title: 'Return Label' // Falls back to English
+                title: 'Return Label'
             })
         );
     });
 
     it('should handle logo file read errors gracefully', async () => {
-        // Arrange
         vi.mocked(mockFs.readFile).mockRejectedValue(new Error('File not found'));
 
         const labelData = {
@@ -161,10 +145,8 @@ describe('ShippingLabelService', () => {
             language: 'en'
         };
 
-        // Act
         await shippingLabelService.generateLabel(labelData);
 
-        // Assert
         expect(mockLogger.error).toHaveBeenCalledWith('Error reading logo file', expect.any(Object));
         expect(mockHtmlRenderer.render).toHaveBeenCalledWith(
             expect.any(String),
@@ -175,7 +157,6 @@ describe('ShippingLabelService', () => {
     });
 
     it('should use correct paths for template and logo files', async () => {
-        // Arrange
         const labelData = {
             return_address: {
                 company: 'Test Company',
@@ -189,10 +170,8 @@ describe('ShippingLabelService', () => {
             language: 'en'
         };
 
-        // Act
         await shippingLabelService.generateLabel(labelData);
 
-        // Assert
         expect(mockPath.join).toHaveBeenCalledWith('/mock/assets/path', 'labelTemplate.html');
         expect(mockPath.join).toHaveBeenCalledWith('/mock/assets/path', 'code-logo.png');
         expect(mockHtmlRenderer.render).toHaveBeenCalledWith(
@@ -213,7 +192,6 @@ describe('ShippingLabelService', () => {
     });
 
     it('should pass the rendered HTML to the PDF generator', async () => {
-        // Arrange
         const labelData = {
             return_address: {
                 company: 'Test Company',
@@ -227,14 +205,11 @@ describe('ShippingLabelService', () => {
             language: 'en'
         };
 
-        // Setup a specific response for HTML renderer
         const customHtml = '<html>Custom Template HTML</html>';
         mockHtmlRenderer.render = vi.fn().mockResolvedValue(customHtml);
 
-        // Act
         const result = await shippingLabelService.generateLabel(labelData);
 
-        // Assert
         expect(mockHtmlRenderer.render).toHaveBeenCalled();
         expect(mockPdfGenerator.generatePdf).toHaveBeenCalledWith(customHtml);
         expect(result).toEqual(Buffer.from('mock-pdf-content'));

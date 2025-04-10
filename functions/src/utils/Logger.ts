@@ -19,7 +19,7 @@ export class Logger implements ILogger {
     private logToConsole(level: LogLevel, message: string, meta?: any): void {
         const timestamp = new Date().toISOString();
         const logMessage = `${timestamp} [${level}] ${message}`;
-        
+
         switch (level) {
             case LogLevel.DEBUG:
                 console.debug(logMessage, meta ? JSON.stringify(meta) : '');

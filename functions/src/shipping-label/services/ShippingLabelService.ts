@@ -7,7 +7,6 @@ import pathModule from 'path';
 import fsModule from 'fs/promises';
 import { TYPES } from '../../constants/types.js';
 
-// Define interfaces for path and fs dependencies
 export interface IPathModule {
     join(...paths: string[]): string;
     resolve(...paths: string[]): string;
@@ -44,7 +43,6 @@ export class ShippingLabelService implements IShippingLabelService {
         }
     };
 
-    // Use default implementations if not provided
     private path: IPathModule;
     private fs: IFileSystem;
 
@@ -55,7 +53,6 @@ export class ShippingLabelService implements IShippingLabelService {
         path?: IPathModule,
         fs?: IFileSystem
     ) {
-        // Use injected dependencies or defaults
         this.path = path || pathModule;
         this.fs = fs || fsModule;
     }
@@ -120,12 +117,12 @@ export class ShippingLabelService implements IShippingLabelService {
         };
 
 
-        this.logger.info('Rendering template', { 
-            language, 
+        this.logger.info('Rendering template', {
+            language,
             order: data.order,
             company: data.return_address.company
         });
-        
+
         const html = await this.htmlRenderer.render(templatePath, templateData);
         return this.pdfGenerator.generatePdf(html);
     }

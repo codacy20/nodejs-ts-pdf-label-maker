@@ -18,9 +18,9 @@ server.setConfig((app) => {
   app.use(cors());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-  
+
   app.use(requestLogger.middleware());
-  
+
   const assetsPath = process.env.ASSETS_PATH || path.join(process.cwd(), '..', 'assets');
   app.use('/assets', express.static(assetsPath));
   logger.info(`Serving static files from: ${assetsPath}`);

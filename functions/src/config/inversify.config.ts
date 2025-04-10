@@ -14,11 +14,9 @@ import fs from 'fs/promises';
 
 const container = new Container();
 
-// Create factory for the ShippingLabelService
 container
     .bind<IShippingLabelService>(TYPES.ShippingLabelService)
     .toDynamicValue(() => {
-        // Using the standard path and fs modules for production
         return new ShippingLabelService(
             container.get<IPdfGenerator>(TYPES.PdfGenerator),
             container.get<IHtmlRenderer>(TYPES.HtmlRenderer),

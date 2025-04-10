@@ -8,13 +8,13 @@ import { TYPES } from '../../constants/types.js';
 export class ShippingLabelController {
     constructor(
         @inject(TYPES.ShippingLabelService) private shippingLabelService: IShippingLabelService
-    ) {}
+    ) { }
 
     @httpPost('/')
     async generateLabel(req: Request, res: Response): Promise<void> {
         try {
             const pdf = await this.shippingLabelService.generateLabel(req.body);
-            
+
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', 'attachment; filename=shipping-label.pdf');
             res.send(pdf);
