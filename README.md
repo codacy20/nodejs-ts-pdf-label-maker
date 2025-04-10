@@ -125,7 +125,9 @@ assets/                 # Templates and static assets
 
 - **Input/Output Validation**: Add schema validation using Zod to ensure data integrity
 - **Testing**: Implement comprehensive unit, integration, and e2e tests, leveraging dependency injection for easier mocking
+  - Currently, only ShippingLabelService has tests implemented
+  - Need to add tests for all controllers, services, and utilities
+  - Aim for high test coverage across all components
 - **API Documentation**: Add Swagger/OpenAPI documentation
 - **Caching**: Implement caching mechanism for frequently used data
-- **Logging Enhancement**: Add structured logging with correlation IDs
 - **Internationalization**: Expand language support beyond English and Dutch
